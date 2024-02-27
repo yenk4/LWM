@@ -439,7 +439,6 @@ class FlaxVideoLLaMAForCausalLMModule(nn.Module):
             raise ValueError(f"Invalid sample_mode: {self.config.sample_mode}")
 
 
-
 @add_start_docstrings("", "")
 class FlaxVideoLLaMAForCausalLM(FlaxVideoLLaMAPreTrainedModel):
     module_class = FlaxVideoLLaMAForCausalLMModule

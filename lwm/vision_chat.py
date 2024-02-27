@@ -34,7 +34,7 @@ FLAGS, FLAGS_DEF = define_flags_with_default(
     tokenizer=VideoLLaMAConfig.get_tokenizer_config(),
     llama=VideoLLaMAConfig.get_default_config(),
     jax_distributed=JaxDistributedConfig.get_default_config(),
-) 
+)
 
 
 class Sampler:
@@ -58,7 +58,8 @@ class Sampler:
     def data_dim(self):
         return self.mesh.shape['dp'] * self.mesh.shape['fsdp']
 
-    def _process_frame(self, image, size):
+    @staticmethod
+    def _process_frame(image, size):
         width, height = image.size
         if width < height:
             new_width = size
@@ -74,7 +75,7 @@ class Sampler:
         bottom = (new_height + size) / 2
         image = image.crop((left, top, right, bottom))
         return np.array(image, dtype=np.float32) / 127.5 - 1
-    
+
     def _read_process_vision(self, path, max_n_frames):
         f = open_file(path, 'rb')
         if path.endswith('.png') or path.endswith('.jpg'):
@@ -145,7 +146,6 @@ class Sampler:
             'vision_masks': vision_masks,
             'attention_mask': attention_mask
         }
-             
 
     def _load_model(self):
         if FLAGS.load_llama_config != '':
@@ -237,7 +237,8 @@ class Sampler:
                 text = text.split(self.tokenizer.eos_token, maxsplit=1)[0]
             output_text.append(text)
         return output_text
-        
+
+
 def main(argv):
     assert FLAGS.prompt != ''
     assert FLAGS.input_file != ''
@@ -249,6 +250,7 @@ def main(argv):
     sampler = Sampler()
     output = sampler(prompts, FLAGS.max_n_frames)[0]
     print(f"Question: {FLAGS.prompt}\nAnswer: {output}")
+
 
 if __name__ == "__main__":
     run(main)
